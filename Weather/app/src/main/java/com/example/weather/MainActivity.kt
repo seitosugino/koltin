@@ -4,6 +4,15 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONException
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
+import java.net.URL
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,6 +32,33 @@ class MainActivity : AppCompatActivity() {
 
         btnTokyo.setOnClickListener {
             val weatherUrl = "$mainUrl&q=tokyo&appid=$apiKey"
+            weatherTask(weatherUrl)
         }
+    }
+
+    private fun weatherTask(weatherUrl:String){
+        lifecycleScope.launch{
+            val result = weatherBackgroundTask(weatherUrl)
+
+            weatherJsonTask(result)
+        }
+    }
+
+    private suspend fun weatherBackgroundTask(weatherUrl: String) :String {
+        val response = withContext(Dispatchers.IO){
+            var httpResult = ""
+
+            try {
+                val urlObj = URL(weatherUrl)
+                val br = BufferedReader(InputStreamReader(urlObj.openStream()))
+                httpResult = br.readText()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            } catch (e: JSONException) {
+                e.printStackTrace()
+            }
+            return@withContext httpResult
+        }
+        return response
     }
 }
