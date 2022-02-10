@@ -35,6 +35,18 @@ class MainActivity : AppCompatActivity() {
             val weatherUrl = "$mainUrl&q=tokyo&appid=$apiKey"
             weatherTask(weatherUrl)
         }
+
+        btnOsaka.setOnClickListener {
+            val weatherUrl = "$mainUrl&q=osaka&appid=$apiKey"
+            weatherTask(weatherUrl)
+        }
+
+        btnClear.setOnClickListener {
+            tvCityName.text = "都市名"
+            tvCityWeather.text = "都市の天気"
+            tvMax.text = "最高気温"
+            tvMin.text = "最低気温"
+        }
     }
 
     private fun weatherTask(weatherUrl:String){
@@ -73,5 +85,14 @@ class MainActivity : AppCompatActivity() {
 
         val cityName = jsonObj.getString("name")
         tvCityName.text = cityName
+
+        val weatherJSONArray = jsonObj.getJSONArray("weather")
+        val weatherJSON = weatherJSONArray.getJSONObject(0)
+        val weather = weatherJSON.getString("description")
+        tvCityWeather.text = weather
+
+        val main =jsonObj.getJSONObject("main")
+        tvMax.text = "最高気温: ${ main.getInt("temp_max") - 273 }℃"
+        tvMin.text = "最低気温: ${ main.getInt("temp_min") - 273 }℃"
     }
 }
