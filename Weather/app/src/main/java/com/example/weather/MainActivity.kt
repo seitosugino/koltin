@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONException
+import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -60,5 +61,17 @@ class MainActivity : AppCompatActivity() {
             return@withContext httpResult
         }
         return response
+    }
+
+    private fun weatherJsonTask(result: String) {
+        val tvCityName:TextView = findViewById(R.id.tvCityName)
+        val tvCityWeather:TextView = findViewById(R.id.tvCityWeather)
+        val tvMax:TextView = findViewById(R.id.tvMax)
+        val tvMin:TextView = findViewById(R.id.tvMin)
+
+        val jsonObj = JSONObject(result)
+
+        val cityName = jsonObj.getString("name")
+        tvCityName.text = cityName
     }
 }
